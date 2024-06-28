@@ -28,6 +28,9 @@ java {
     }
 }
 
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
 tasks.named('test') {
     useJUnitPlatform()
 }
