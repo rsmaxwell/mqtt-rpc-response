@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x 
-
 if [ -z "${BUILD_ID}" ]; then
     BUILD_ID="(none)"
     VERSION="0.0.1-SNAPSHOT"
@@ -19,7 +17,7 @@ SCRIPT_DIR=$(cd $BASEDIR && pwd)
 SUBPROJECT_DIR=$(dirname $SCRIPT_DIR)
 PROJECT_DIR=$(dirname $SUBPROJECT_DIR)
 BUILD_DIR=${SUBPROJECT_DIR}/build
-
+SOURCE_DIR=${SUBPROJECT_DIR}/src
 
 
 
@@ -82,14 +80,3 @@ GIT_COMMIT="${GIT_COMMIT}"
 GIT_BRANCH="${GIT_BRANCH}"
 GIT_URL="${GIT_URL}"
 EOL
-
-pwd
-ls -al 
-cat buildinfo
-
-echo "subproject directory"
-cd ${SUBPROJECT_DIR}
-ls -al 
-
-echo "gradle.properties"
-cat gradle.properties
