@@ -7,6 +7,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
 import org.eclipse.paho.mqttv5.client.MqttClientPersistence;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
@@ -19,6 +21,8 @@ import com.rsmaxwell.mqtt.rpc.response.handlers.Quit;
 import com.rsmaxwell.mqtt.rpc.response.handlers.RequestHandler;
 
 public class Responder {
+
+	private static final Logger logger = LogManager.getLogger(Responder.class);
 
 	static String clientID_responder = "responder";
 	static String clientID_subscriber = "listener";
@@ -80,11 +84,11 @@ public class Responder {
 		// Wait till quit request received
 		messageHandler.waitForCompletion();
 
-		System.out.println("disconnect");
+		logger.info("disconnect");
 		client_responder.disconnect().waitForCompletion();
 		client_subscriber.disconnect().waitForCompletion();
 
-		System.out.println("exiting");
+		logger.info("exiting");
 	}
 
 	static Option createOption(String shortName, String longName, String argName, String description, boolean required) {
