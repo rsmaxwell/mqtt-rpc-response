@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.rsmaxwell.mqtt.rpc.common.Response;
 import com.rsmaxwell.mqtt.rpc.common.Utilities;
+import com.rsmaxwell.mqtt.rpc.response.RequestHandler;
 
 public class Calculator extends RequestHandler {
 
@@ -14,7 +15,7 @@ public class Calculator extends RequestHandler {
 
 	@Override
 	public Response handleRequest(Map<String, Object> args) throws Exception {
-		logger.info("calculator.handleRequest");
+		logger.traceEntry();
 
 		try {
 			String operation = Utilities.getString(args, "operation");
@@ -26,17 +27,22 @@ public class Calculator extends RequestHandler {
 			switch (operation) {
 			case "add":
 				value = param1 + param2;
+				break;
 			case "mul":
 				value = param1 * param2;
+				break;
 			case "div":
 				value = param1 / param2;
+				break;
 			case "sub":
 				value = param1 - param2;
+				break;
+			default:
+				throw new Exception(String.format("Unexpected operation: %s", operation));
 			}
 
 			return success(value);
 		} catch (Exception e) {
-
 			return badRequest(e.getMessage());
 		}
 	}

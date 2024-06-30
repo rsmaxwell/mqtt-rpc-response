@@ -1,4 +1,4 @@
-package com.rsmaxwell.mqtt.rpc.response.handlers;
+package com.rsmaxwell.mqtt.rpc.response;
 
 import java.net.HttpURLConnection;
 import java.util.Map;

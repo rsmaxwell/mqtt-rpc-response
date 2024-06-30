@@ -6,13 +6,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rsmaxwell.mqtt.rpc.common.Response;
+import com.rsmaxwell.mqtt.rpc.response.RequestHandler;
 
-public class Quit extends RequestHandler {
+public class GetPages extends RequestHandler {
 
-	private static final Logger logger = LogManager.getLogger(Quit.class);
+	private static final Logger logger = LogManager.getLogger(GetPages.class);
 
 	public Response handleRequest(Map<String, Object> args) throws Exception {
-		logger.info("quit.handleRequest");
-		return quit();
+		logger.info("getPages: handleRequest");
+		return success("[ 'one', 'two', 'three' ]");
 	}
 }

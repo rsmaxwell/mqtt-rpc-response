@@ -14,7 +14,6 @@ import com.rsmaxwell.mqtt.rpc.common.Adapter;
 import com.rsmaxwell.mqtt.rpc.common.Request;
 import com.rsmaxwell.mqtt.rpc.common.Response;
 import com.rsmaxwell.mqtt.rpc.common.Token;
-import com.rsmaxwell.mqtt.rpc.response.handlers.RequestHandler;
 
 public class MessageHandler extends Adapter implements MqttCallback {
 
@@ -35,10 +34,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	}
 
 	public void messageArrived(String topic, MqttMessage requestMessage) throws Exception {
-		logger.info("messageArrived");
-		logger.info("topic: " + topic);
-		logger.info("qos: " + requestMessage.getQos());
-		logger.info("message content: " + new String(requestMessage.getPayload()));
+		logger.info(String.format("messageArrived: topic: %s, qos: %d, payload: %s", topic, requestMessage.getQos(), new String(requestMessage.getPayload())));
 
 		try {
 			MqttProperties requestProperties = requestMessage.getProperties();

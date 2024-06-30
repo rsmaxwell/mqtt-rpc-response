@@ -18,7 +18,6 @@ import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import com.rsmaxwell.mqtt.rpc.response.handlers.Calculator;
 import com.rsmaxwell.mqtt.rpc.response.handlers.GetPages;
 import com.rsmaxwell.mqtt.rpc.response.handlers.Quit;
-import com.rsmaxwell.mqtt.rpc.response.handlers.RequestHandler;
 
 public class Responder {
 
@@ -63,21 +62,21 @@ public class Responder {
 		messageHandler.setClient(client_responder);
 		client_subscriber.setCallback(messageHandler);
 
-		System.out.printf(String.format("Connecting to broker: %s as '%s'\n", server, clientID_responder));
+		logger.info(String.format("Connecting to broker: %s as '%s'", server, clientID_responder));
 		MqttConnectionOptions connOpts_responder = new MqttConnectionOptions();
 		connOpts_responder.setUserName(username);
 		connOpts_responder.setPassword(password.getBytes());
 		connOpts_responder.setCleanStart(true);
 		client_responder.connect(connOpts_responder).waitForCompletion();
 
-		System.out.printf(String.format("Connecting to broker: %s as '%s'\n", server, clientID_subscriber));
+		logger.info(String.format("Connecting to broker: %s as '%s'", server, clientID_subscriber));
 		MqttConnectionOptions connOpts_subscriber = new MqttConnectionOptions();
 		connOpts_subscriber.setUserName(username);
 		connOpts_subscriber.setPassword(password.getBytes());
 		connOpts_subscriber.setCleanStart(true);
 		client_subscriber.connect(connOpts_subscriber).waitForCompletion();
 
-		System.out.printf(String.format("subscribing to: %s\n", requestTopic));
+		logger.info(String.format("subscribing to: %s", requestTopic));
 		MqttSubscription subscription = new MqttSubscription(requestTopic);
 		client_subscriber.subscribe(subscription).waitForCompletion();
 
