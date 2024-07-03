@@ -50,7 +50,7 @@ cd ${SOURCE_DIR}
 
 tags='$PROJECT,$REPOSITORY,$VERSION,$BUILD_ID,$TIMESTAMP,$GIT_COMMIT,$GIT_BRANCH,$GIT_URL'
 
-find . -name Version.java | while read filename; do
+find . -name BuildInfo.java | while read filename; do
     echo "Updating ${filename}"
     originalfile=${SOURCE_DIR}/${filename}
     tmpfile=$(mktemp)
