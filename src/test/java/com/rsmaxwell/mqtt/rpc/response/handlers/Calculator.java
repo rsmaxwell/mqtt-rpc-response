@@ -7,9 +7,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.rsmaxwell.mqtt.rpc.common.Response;
 import com.rsmaxwell.mqtt.rpc.common.Utilities;
-import com.rsmaxwell.mqtt.rpc.response.ResponseHandler;
+import com.rsmaxwell.mqtt.rpc.response.RequestHandler;
 
-public class Calculator extends ResponseHandler {
+public class Calculator extends RequestHandler {
 
 	private static final Logger logger = LogManager.getLogger(Calculator.class);
 
