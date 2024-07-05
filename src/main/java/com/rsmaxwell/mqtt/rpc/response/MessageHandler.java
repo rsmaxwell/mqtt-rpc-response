@@ -25,8 +25,8 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 	private Token keepRunning = new Token();
 
-	public MessageHandler(HashMap<String, ResponseHandler> handlers) {
-		this.handlers = handlers;
+	public void putHandler(String key, ResponseHandler handler) {
+		handlers.put(key, handler);
 	}
 
 	public void setClient(MqttAsyncClient client) {
