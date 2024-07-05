@@ -32,7 +32,7 @@ public class Responder {
 	static MessageHandler messageHandler;
 
 	static {
-		HashMap<String, RequestHandler> handlers = new HashMap<String, RequestHandler>();
+		HashMap<String, ResponseHandler> handlers = new HashMap<String, ResponseHandler>();
 		handlers.put("calculator", new Calculator());
 		handlers.put("getPages", new GetPages());
 		handlers.put("quit", new Quit());

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.rsmaxwell.mqtt.rpc.common.Response;
 
-public abstract class RequestHandler {
+public abstract class ResponseHandler {
 
 	public abstract Response handleRequest(Map<String, Object> args) throws Exception;
 

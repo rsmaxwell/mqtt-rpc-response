@@ -20,12 +20,12 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	private static final Logger logger = LogManager.getLogger(MessageHandler.class);
 
 	private MqttAsyncClient client;
-	private HashMap<String, RequestHandler> handlers;
+	private HashMap<String, ResponseHandler> handlers;
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private Token keepRunning = new Token();
 
-	public MessageHandler(HashMap<String, RequestHandler> handlers) {
+	public MessageHandler(HashMap<String, ResponseHandler> handlers) {
 		this.handlers = handlers;
 	}
 
@@ -86,7 +86,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 			logger.info("function: " + request.getFunction());
 
-			RequestHandler handler = handlers.get(request.getFunction());
+			ResponseHandler handler = handlers.get(request.getFunction());
 
 			if (handler == null) {
 				logger.info("discarding message with unexpected function");
