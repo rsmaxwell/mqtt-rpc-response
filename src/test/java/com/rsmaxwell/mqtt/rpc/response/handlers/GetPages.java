@@ -13,7 +13,7 @@ public class GetPages extends RequestHandler {
 	private static final Logger logger = LogManager.getLogger(GetPages.class);
 
 	public Response handleRequest(Map<String, Object> args) throws Exception {
-		logger.info("getPages: handleRequest");
+		logger.traceEntry();
 		return success("[ 'one', 'two', 'three' ]");
 	}
 }
