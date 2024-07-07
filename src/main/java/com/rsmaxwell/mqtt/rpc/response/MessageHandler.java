@@ -143,7 +143,9 @@ public class MessageHandler extends Adapter implements MqttCallback {
 				Boolean value = result.getBoolean("keepRunning");
 				if (value == false) {
 					logger.info("quitting");
-					keepRunning.notify();
+					synchronized (keepRunning) {
+						keepRunning.notify();
+					}
 					return;
 				}
 			}
@@ -153,6 +155,8 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	}
 
 	public void waitForCompletion() throws InterruptedException {
-		keepRunning.wait();
+		synchronized (keepRunning) {
+			keepRunning.wait();
+		}
 	}
 }
