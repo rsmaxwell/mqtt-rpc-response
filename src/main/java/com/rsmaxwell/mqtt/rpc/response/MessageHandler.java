@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rsmaxwell.mqtt.rpc.common.Adapter;
 import com.rsmaxwell.mqtt.rpc.common.Request;
 import com.rsmaxwell.mqtt.rpc.common.Response;
-import com.rsmaxwell.mqtt.rpc.common.Token;
 
 public class MessageHandler extends Adapter implements MqttCallback {
 
@@ -23,7 +22,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	private HashMap<String, RequestHandler> handlers;
 	private ObjectMapper mapper = new ObjectMapper();
 
-	private Token keepRunning = new Token();
+	private Object keepRunning = new Object();
 
 	public MessageHandler() {
 		handlers = new HashMap<String, RequestHandler>();
@@ -144,7 +143,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 				Boolean value = result.getBoolean("keepRunning");
 				if (value == false) {
 					logger.info("quitting");
-					keepRunning.completed();
+					keepRunning.notify();
 					return;
 				}
 			}
@@ -154,6 +153,6 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	}
 
 	public void waitForCompletion() throws InterruptedException {
-		keepRunning.waitForCompletion();
+		keepRunning.wait();
 	}
 }
