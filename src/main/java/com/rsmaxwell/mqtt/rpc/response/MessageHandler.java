@@ -137,7 +137,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		responseMessage.setProperties(responseProperties);
 		responseMessage.setQos(qos);
 
-		logger.info(String.format("Publishing: %s to topic: %s\n", new String(bytes), responseTopic));
+		logger.info(String.format("Publishing: %s to topic: %s", new String(bytes), responseTopic));
 		client.publish(responseTopic, responseMessage).waitForCompletion();
 		logger.info(String.format("publish complete"));
 

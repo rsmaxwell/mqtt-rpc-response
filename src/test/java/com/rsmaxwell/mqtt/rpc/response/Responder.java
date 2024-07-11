@@ -11,11 +11,12 @@ import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
 import org.eclipse.paho.mqttv5.client.MqttClientPersistence;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
 import org.eclipse.paho.mqttv5.client.persist.MqttDefaultFilePersistence;
+import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 
-import com.rsmaxwell.mqtt.rpc.response.handlers.Calculator;
-import com.rsmaxwell.mqtt.rpc.response.handlers.GetPages;
-import com.rsmaxwell.mqtt.rpc.response.handlers.Quit;
+import com.rsmaxwell.mqtt.rpc.response.handlers.CalculatorHandler;
+import com.rsmaxwell.mqtt.rpc.response.handlers.GetPagesHandler;
+import com.rsmaxwell.mqtt.rpc.response.handlers.QuitHandler;
 
 public class Responder {
 
@@ -31,9 +32,9 @@ public class Responder {
 
 	static {
 		messageHandler = new MessageHandler();
-		messageHandler.putHandler("calculator", new Calculator());
-		messageHandler.putHandler("getPages", new GetPages());
-		messageHandler.putHandler("quit", new Quit());
+		messageHandler.putHandler("calculator", new CalculatorHandler());
+		messageHandler.putHandler("getPages", new GetPagesHandler());
+		messageHandler.putHandler("quit", new QuitHandler());
 	}
 
 	static Option createOption(String shortName, String longName, String argName, String description, boolean required) {
@@ -41,6 +42,8 @@ public class Responder {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+		logger.info("Responder");
 
 		Options options = new Options();
 		Option serverOption = createOption("s", "server", "mqtt server", "URL of MQTT server", false);
@@ -67,7 +70,15 @@ public class Responder {
 		connOpts_responder.setUserName(username);
 		connOpts_responder.setPassword(password.getBytes());
 		connOpts_responder.setCleanStart(true);
-		client_responder.connect(connOpts_responder).waitForCompletion();
+		try {
+			client_responder.connect(connOpts_responder).waitForCompletion();
+		} catch (MqttException e) {
+			logger.info(String.format("Could not connect to the MQTT Broker at: %s", server));
+			return;
+		} catch (Exception e) {
+			logger.error("%s: %s", e.getClass().getSimpleName(), e.getMessage());
+			return;
+		}
 
 		logger.info(String.format("Connecting to broker: %s as '%s'", server, clientID_subscriber));
 		MqttConnectionOptions connOpts_subscriber = new MqttConnectionOptions();

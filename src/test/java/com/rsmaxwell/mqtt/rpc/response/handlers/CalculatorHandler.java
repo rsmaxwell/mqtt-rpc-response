@@ -9,9 +9,9 @@ import com.rsmaxwell.mqtt.rpc.common.Result;
 import com.rsmaxwell.mqtt.rpc.common.Utilities;
 import com.rsmaxwell.mqtt.rpc.response.RequestHandler;
 
-public class Calculator extends RequestHandler {
+public class CalculatorHandler extends RequestHandler {
 
-	private static final Logger logger = LogManager.getLogger(Calculator.class);
+	private static final Logger logger = LogManager.getLogger(CalculatorHandler.class);
 
 	@Override
 	public Result handleRequest(Map<String, Object> args) throws Exception {

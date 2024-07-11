@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 import com.rsmaxwell.mqtt.rpc.common.Result;
 import com.rsmaxwell.mqtt.rpc.response.RequestHandler;
 
-public class Quit extends RequestHandler {
+public class QuitHandler extends RequestHandler {
 
-	private static final Logger logger = LogManager.getLogger(Quit.class);
+	private static final Logger logger = LogManager.getLogger(QuitHandler.class);
 
 	public Result handleRequest(Map<String, Object> args) throws Exception {
 		logger.traceEntry();

@@ -23,22 +23,25 @@ pushd %SUBPROJECT_DIR%\build
 set BUILD_DIR=%CD%
 popd
 
-
+echo off
 
 cd %PROJECT_DIR%
 
-set CLASSPATH="%SUBPROJECT_DIR%\build\classes\java\test
-for /R .\mqtt-rpc-response\build\libs %%a in (*.jar) do (
+set CLASSPATH="%SUBPROJECT_DIR%\build\classes\java\main
+set CLASSPATH=!CLASSPATH!;%SUBPROJECT_DIR%\build\classes\java\test
+set CLASSPATH=!CLASSPATH!;%SUBPROJECT_DIR%\src\test\resources\log4j2.xml
+set CLASSPATH=!CLASSPATH!;%PROJECT_DIR%\mqtt-rpc-common\build\libs\mqtt-rpc-common.jar
+for /R %SUBPROJECT_DIR%\runtime %%a in (*.jar) do (
   set CLASSPATH=!CLASSPATH!;%%a
 )
-for /R .\mqtt-rpc-common\build\libs %%a in (*.jar) do (
-  set CLASSPATH=!CLASSPATH!;%%a
-)
-for /R .\mqtt-rpc-response\runtime %%a in (*.jar) do (
-  set CLASSPATH=!CLASSPATH!;%%a
-)
-set CLASSPATH=!CLASSPATH!;%SUBPROJECT_DIR%\src\main\resources\log4j2.xml
 set CLASSPATH=!CLASSPATH!"
 
 
+echo 
+echo %CLASSPATH%
+echo 
+
+set LOGGER_LEVEL=INFO
+
+echo off
 java -classpath %CLASSPATH% com.rsmaxwell.mqtt.rpc.response.Responder --username %MQTT_USERNAME% --password %MQTT_PASSWORD%
