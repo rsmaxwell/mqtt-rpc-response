@@ -38,7 +38,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	}
 
 	public void messageArrived(String topic, MqttMessage requestMessage) throws Exception {
-		logger.info(String.format("messageArrived: topic: %s, qos: %d, payload: %s", topic, requestMessage.getQos(), new String(requestMessage.getPayload())));
+		logger.info(String.format("Received request: %s", new String(requestMessage.getPayload())));
 
 		MqttProperties requestProperties = requestMessage.getProperties();
 		if (requestProperties == null) {
@@ -57,15 +57,23 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
-		logger.info("responseTopic: " + responseTopic);
+		byte[] correlationData = requestProperties.getCorrelationData();
+		String correlID;
+		if (correlationData == null) {
+			correlID = "(null)";
+		} else {
+			correlID = new String(correlationData);
+		}
+
+		logger.debug(String.format("responseTopic:   %s", responseTopic));
+		logger.debug(String.format("correlationData: %s", correlID));
 
 		String payload = new String(requestMessage.getPayload());
 
 		Request request = null;
 		try {
-			logger.info("decoding message payload: " + payload);
+			logger.debug("decoding message payload");
 			request = mapper.readValue(payload, Request.class);
-			logger.info("decoded message payload");
 		} catch (Exception e) {
 			logger.error("discarding request because message could not be decoded", e);
 			return;
@@ -86,10 +94,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
-		logger.info("function: " + request.getFunction());
-
 		RequestHandler handler = handlers.get(request.getFunction());
-
 		if (handler == null) {
 			logger.error("discarding request with unexpected function");
 			return;
@@ -99,7 +104,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		try {
 			result = handler.handleRequest(request.getArgs());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.catching(e);
 			logger.error("discarding request because the message could not be handled");
 			return;
 		}
@@ -115,7 +120,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
-		logger.info("encoding response");
+		logger.debug("encoding response");
 		byte[] bytes = null;
 		try {
 			bytes = mapper.writeValueAsBytes(response);
@@ -137,12 +142,11 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		responseMessage.setProperties(responseProperties);
 		responseMessage.setQos(qos);
 
-		logger.info(String.format("Publishing: %s to topic: %s", new String(bytes), responseTopic));
+		logger.info(String.format("Sending reply: %s", new String(bytes)));
 		client.publish(responseTopic, responseMessage).waitForCompletion();
-		logger.info(String.format("publish complete"));
 
 		if (result.isQuit()) {
-			logger.info("quitting");
+			logger.debug("quitting");
 			synchronized (keepRunning) {
 				keepRunning.notify();
 			}

@@ -27,8 +27,8 @@ popd
 
 cd %PROJECT_DIR%
 
-set CLASSPATH="%SUBPROJECT_DIR%\build\classes\java\main
-set CLASSPATH=%CLASSPATH%;%SUBPROJECT_DIR%\build\classes\java\test
+set CLASSPATH="%SUBPROJECT_DIR%\bin\main
+set CLASSPATH=%CLASSPATH%;%SUBPROJECT_DIR%\bin\test
 set CLASSPATH=%CLASSPATH%;%SUBPROJECT_DIR%\src\test\resources
 set CLASSPATH=%CLASSPATH%;%PROJECT_DIR%\mqtt-rpc-common\build\libs\mqtt-rpc-common.jar
 for /R %SUBPROJECT_DIR%\runtime %%a in (*.jar) do (
