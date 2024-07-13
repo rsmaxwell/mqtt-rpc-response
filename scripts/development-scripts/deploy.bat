@@ -13,12 +13,16 @@ pushd %SCRIPT_DIR%
 set SCRIPT_DIR=%CD%
 popd
 
+pushd %SUBPROJECT_DIR%
+set SUBPROJECT_DIR=%CD%
+popd
+
 pushd %PROJECT_DIR%
 set PROJECT_DIR=%CD%
 popd
 
-pushd %SUBPROJECT_DIR%
-set SUBPROJECT_DIR=%CD%
+pushd %BUILD_DIR%
+set BUILD_DIR=%CD%
 popd
 
 
@@ -27,7 +31,7 @@ call %BUILD_DIR%\buildinfo.bat
 
 cd %SUBPROJECT_DIR%
 
-call %PROJECT_DIR%/gradlew publish --no-daemon --info --warning-mode all
+call %PROJECT_DIR%/gradlew publish
 
 
 popd
