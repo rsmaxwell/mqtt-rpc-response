@@ -27,7 +27,7 @@ call %BUILD_DIR%\buildinfo.bat
 
 cd %SUBPROJECT_DIR%
 
-call %PROJECT_DIR%/gradlew :mqtt-rpc-common:publish --no-daemon --info --warning-mode all
+call %PROJECT_DIR%/gradlew publish --no-daemon --info --warning-mode all
 
 
 popd

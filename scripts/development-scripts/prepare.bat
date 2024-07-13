@@ -21,9 +21,10 @@ pushd %SUBPROJECT_DIR%\build
 set BUILD_DIR=%CD%
 popd
 
+cd %SUBPROJECT%
 
 
-set PROJECT=mqtt-rpc-common
+set PROJECT=mqtt-rpc-response
 set GROUPID=com.rsmaxwell.mqtt.rpc
 set ARTIFACTID=%PROJECT%
 
@@ -45,7 +46,7 @@ set REPOSITORY=snapshots
 
 
 echo on
-..\gradlew --warning-mode all :mqtt-rpc-common:build
+..\gradlew build --warning-mode all 
 
 (
     echo set BUILD_ID=%BUILD_ID%
