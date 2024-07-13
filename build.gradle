@@ -68,6 +68,7 @@ publishing {
     }
 }
 
+
 task getDeps(type: Copy) {
   from sourceSets.main.runtimeClasspath, sourceSets.test.runtimeClasspath
   into 'runtime/'
