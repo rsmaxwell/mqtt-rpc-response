@@ -44,9 +44,11 @@ public class CalculatorHandler extends RequestHandler {
 			}
 
 			return success(value);
+		} catch (ArithmeticException e) {
+			return badRequest(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
 		} catch (Exception e) {
 			logger.catching(e);
-			return badRequest(e.getMessage());
+			return badRequest(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
 		}
 	}
 }

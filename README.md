@@ -37,3 +37,10 @@ A handler implements the handleRequest method which is given an argument of a ma
     - error code (borrowed from http status values)
     - error message (optional)
     - response to the request
+
+### Example
+
+An example of the using mqtt-rpc to make a request is: [CalculatorRequest](https://github.com/rsmaxwell/mqtt-rpc-request/blob/main/src/test/java/com/rsmaxwell/mqtt/rpc/request/CalculatorRequest.java)
+
+
+  
