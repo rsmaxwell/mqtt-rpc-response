@@ -40,7 +40,8 @@ A handler implements the handleRequest method which is given an argument of a ma
 
 ### Example
 
-An example of the using mqtt-rpc to make a request is: [CalculatorRequest](https://github.com/rsmaxwell/mqtt-rpc-request/blob/main/src/test/java/com/rsmaxwell/mqtt/rpc/request/CalculatorRequest.java)
+An example of a handler for a particular type of request is: [CalculatorRequest](https://github.com/rsmaxwell/mqtt-rpc-response/blob/main/src/test/java/com/rsmaxwell/mqtt/rpc/response/handlers/CalculatorHandler.java)
 
+An example of a user written Responder loading this Handler is: [Responder](https://github.com/rsmaxwell/mqtt-rpc-response/blob/main/src/test/java/com/rsmaxwell/mqtt/rpc/response/Responder.java)
 
   
