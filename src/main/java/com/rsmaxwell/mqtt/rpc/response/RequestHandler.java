@@ -10,6 +10,12 @@ public abstract class RequestHandler {
 
 	public abstract Result handleRequest(Map<String, Object> args) throws Exception;
 
+	public static Result ok() {
+		Response response = new Response();
+		response.put("code", HttpURLConnection.HTTP_OK);
+		return new Result(response, false);
+	}
+
 	public static Result success(Object value) {
 		Response response = new Response();
 		response.put("code", HttpURLConnection.HTTP_OK);
