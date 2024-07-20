@@ -37,6 +37,12 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		this.client = client;
 	}
 
+	public void waitForCompletion() throws InterruptedException {
+		synchronized (keepRunning) {
+			keepRunning.wait();
+		}
+	}
+
 	public void messageArrived(String topic, MqttMessage requestMessage) throws Exception {
 		logger.info(String.format("Received request: %s", new String(requestMessage.getPayload())));
 
@@ -57,6 +63,24 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
+		Result result = getResult(requestProperties, responseTopic, requestMessage);
+
+		MqttMessage responseMessage = getRessponseMessage(requestMessage, result);
+
+		client.publish(responseTopic, responseMessage).waitForCompletion();
+
+		if (result.isQuit()) {
+			logger.debug("quitting");
+			synchronized (keepRunning) {
+				keepRunning.notify();
+			}
+			return;
+		}
+	}
+
+	private Result getResult(MqttProperties requestProperties, String responseTopic, MqttMessage requestMessage) {
+		Result result = null;
+
 		byte[] correlationData = requestProperties.getCorrelationData();
 		String correlID;
 		if (correlationData == null) {
@@ -75,49 +99,45 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			logger.debug("decoding message payload");
 			request = mapper.readValue(payload, Request.class);
 		} catch (Exception e) {
-			logger.error("discarding request because message could not be decoded", e);
-			return;
+			return Result.badRequestException(e);
 		}
 
 		if (request == null) {
-			logger.error("discarding request because there was no request");
-			return;
+			return Result.badRequest("missing request");
 		}
 
 		if (request.getFunction() == null) {
-			logger.error("discarding request with no function");
-			return;
+			return Result.badRequest("missing function");
 		}
 
 		if (request.getFunction().length() <= 0) {
-			logger.error("discarding request with empty function");
-			return;
+			return Result.badRequest("empty function");
 		}
 
 		RequestHandler handler = handlers.get(request.getFunction());
 		if (handler == null) {
-			logger.error("discarding request with unexpected function");
-			return;
+			return Result.badRequest("unexpected function");
 		}
 
-		Result result;
 		try {
 			result = handler.handleRequest(request.getArgs());
 		} catch (Exception e) {
 			logger.catching(e);
-			logger.error("discarding request because the message could not be handled");
-			return;
+			return Result.badRequestException(e);
 		}
 
 		if (result == null) {
-			logger.error("discarding request because result was null");
-			return;
+			return Result.badRequest("result is null");
 		}
+
+		return result;
+	}
+
+	private MqttMessage getRessponseMessage(MqttMessage requestMessage, Result result) {
 
 		Response response = result.getResponse();
 		if (response == null) {
-			logger.error("discarding request because response was null");
-			return;
+			response = Response.internalError("discarding request because response was null");
 		}
 
 		logger.debug("encoding response");
@@ -125,38 +145,26 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		try {
 			bytes = mapper.writeValueAsBytes(response);
 		} catch (Exception e) {
-			logger.error("discarding request because the response could not be encoded", e);
-			return;
+			logger.catching(e);
+			String message = String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage());
+			bytes = message.getBytes();
 		}
 
 		if (bytes == null) {
-			logger.error("discarding request because responseAsBytes was null");
-			return;
+			String message = "response bytes are null";
+			logger.error(message);
+			bytes = message.getBytes();
 		}
 
+		int qos = 0;
 		MqttProperties responseProperties = new MqttProperties();
 		responseProperties.setCorrelationData(requestMessage.getProperties().getCorrelationData());
-
-		int qos = 0;
 		MqttMessage responseMessage = new MqttMessage(bytes);
 		responseMessage.setProperties(responseProperties);
 		responseMessage.setQos(qos);
 
 		logger.info(String.format("Sending reply: %s", new String(bytes)));
-		client.publish(responseTopic, responseMessage).waitForCompletion();
 
-		if (result.isQuit()) {
-			logger.debug("quitting");
-			synchronized (keepRunning) {
-				keepRunning.notify();
-			}
-			return;
-		}
-	}
-
-	public void waitForCompletion() throws InterruptedException {
-		synchronized (keepRunning) {
-			keepRunning.wait();
-		}
+		return responseMessage;
 	}
 }

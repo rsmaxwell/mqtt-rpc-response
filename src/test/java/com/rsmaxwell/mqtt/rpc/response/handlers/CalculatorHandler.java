@@ -43,12 +43,13 @@ public class CalculatorHandler extends RequestHandler {
 				throw new Exception(text);
 			}
 
-			return success(value);
+			return Result.success(value);
 		} catch (ArithmeticException e) {
-			return badRequest(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
+			logger.debug(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
+			return Result.badRequestException(e);
 		} catch (Exception e) {
 			logger.catching(e);
-			return badRequest(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
+			return Result.badRequestException(e);
 		}
 	}
 }
