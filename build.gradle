@@ -1,15 +1,13 @@
 
+
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'eclipse'
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url "${mavenRepositoryBaseURL}/releases"
-        allowInsecureProtocol = true
-    }
 }
 
 dependencies {
@@ -69,7 +67,10 @@ publishing {
 }
 
 
-task getDeps(type: Copy) {
-  from sourceSets.main.runtimeClasspath, sourceSets.test.runtimeClasspath
-  into 'runtime/'
+
+task getDeps {
+  copy {
+    from sourceSets.main.runtimeClasspath, sourceSets.test.runtimeClasspath
+    into 'runtime/'
+  }
 }
