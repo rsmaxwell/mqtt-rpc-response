@@ -43,7 +43,7 @@ public class Responder {
 
 	public static void main(String[] args) throws Exception {
 
-		logger.info("Responder");
+		logger.info("mqtt-rcp Responder");
 
 		Options options = new Options();
 		Option serverOption = createOption("s", "server", "mqtt server", "URL of MQTT server", false);
