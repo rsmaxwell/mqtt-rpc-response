@@ -116,7 +116,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 		RequestHandler handler = handlers.get(request.getFunction());
 		if (handler == null) {
-			return Result.badRequest("unexpected function");
+			return Result.badRequest(String.format("unexpected function: %s", request.getFunction()));
 		}
 
 		try {
