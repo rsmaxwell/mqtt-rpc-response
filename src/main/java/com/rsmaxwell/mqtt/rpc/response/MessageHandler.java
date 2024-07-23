@@ -52,6 +52,15 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
+		byte[] correlationData = requestProperties.getCorrelationData();
+		if (correlationData == null) {
+			logger.error("discarding request with no correlationData");
+			return;
+		}
+
+		String correlID = new String(correlationData);
+		logger.debug(String.format("correlationData: %s", correlID));
+
 		String responseTopic = requestProperties.getResponseTopic();
 		if (responseTopic == null) {
 			logger.error("discarding request with no responseTopic");
@@ -63,9 +72,11 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return;
 		}
 
-		Result result = getResult(requestProperties, responseTopic, requestMessage);
+		logger.debug(String.format("responseTopic:   %s", responseTopic));
 
-		MqttMessage responseMessage = getRessponseMessage(requestMessage, result);
+		Result result = getResult(responseTopic, requestMessage);
+
+		MqttMessage responseMessage = getResponseMessage(requestMessage, result);
 
 		client.publish(responseTopic, responseMessage).waitForCompletion();
 
@@ -78,19 +89,8 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		}
 	}
 
-	private Result getResult(MqttProperties requestProperties, String responseTopic, MqttMessage requestMessage) {
+	private Result getResult(String responseTopic, MqttMessage requestMessage) {
 		Result result = null;
-
-		byte[] correlationData = requestProperties.getCorrelationData();
-		String correlID;
-		if (correlationData == null) {
-			correlID = "(null)";
-		} else {
-			correlID = new String(correlationData);
-		}
-
-		logger.debug(String.format("responseTopic:   %s", responseTopic));
-		logger.debug(String.format("correlationData: %s", correlID));
 
 		String payload = new String(requestMessage.getPayload());
 
@@ -133,7 +133,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		return result;
 	}
 
-	private MqttMessage getRessponseMessage(MqttMessage requestMessage, Result result) {
+	private MqttMessage getResponseMessage(MqttMessage requestMessage, Result result) {
 
 		Response response = result.getResponse();
 		if (response == null) {
@@ -141,29 +141,29 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		}
 
 		logger.debug("encoding response");
-		byte[] bytes = null;
+		byte[] body = null;
 		try {
-			bytes = mapper.writeValueAsBytes(response);
+			body = mapper.writeValueAsBytes(response);
 		} catch (Exception e) {
 			logger.catching(e);
 			String message = String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage());
-			bytes = message.getBytes();
+			body = message.getBytes();
 		}
 
-		if (bytes == null) {
-			String message = "response bytes are null";
+		if (body == null) {
+			String message = "response body is null";
 			logger.error(message);
-			bytes = message.getBytes();
+			body = message.getBytes();
 		}
 
 		int qos = 0;
 		MqttProperties responseProperties = new MqttProperties();
 		responseProperties.setCorrelationData(requestMessage.getProperties().getCorrelationData());
-		MqttMessage responseMessage = new MqttMessage(bytes);
+		MqttMessage responseMessage = new MqttMessage(body);
 		responseMessage.setProperties(responseProperties);
 		responseMessage.setQos(qos);
 
-		logger.info(String.format("Sending reply: %s", new String(bytes)));
+		logger.info(String.format("Sending reply: %s", new String(body)));
 
 		return responseMessage;
 	}
