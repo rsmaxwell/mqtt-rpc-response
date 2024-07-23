@@ -20,6 +20,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	private static final Logger logger = LogManager.getLogger(MessageHandler.class);
 
 	private MqttAsyncClient client;
+	private Object ctx;
 	private HashMap<String, RequestHandler> handlers;
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -35,6 +36,10 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 	public void setClient(MqttAsyncClient client) {
 		this.client = client;
+	}
+
+	public void setContext(Object ctx) {
+		this.ctx = ctx;
 	}
 
 	public void waitForCompletion() throws InterruptedException {
@@ -120,7 +125,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		}
 
 		try {
-			result = handler.handleRequest(request.getArgs());
+			result = handler.handleRequest(ctx, request.getArgs());
 		} catch (Exception e) {
 			logger.catching(e);
 			return Result.badRequestException(e);

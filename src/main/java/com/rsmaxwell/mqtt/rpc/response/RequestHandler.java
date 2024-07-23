@@ -6,5 +6,5 @@ import com.rsmaxwell.mqtt.rpc.common.Result;
 
 public abstract class RequestHandler {
 
-	public abstract Result handleRequest(Map<String, Object> args) throws Exception;
+	public abstract Result handleRequest(Object ctx, Map<String, Object> args) throws Exception;
 }
