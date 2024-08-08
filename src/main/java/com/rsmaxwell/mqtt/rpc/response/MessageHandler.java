@@ -59,6 +59,10 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 		byte[] correlationData = requestProperties.getCorrelationData();
 		if (correlationData == null) {
+
+			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestProperties);
+			logger.debug(String.format("Properties:\n%s", json));
+
 			logger.error("discarding request with no correlationData");
 			return;
 		}
