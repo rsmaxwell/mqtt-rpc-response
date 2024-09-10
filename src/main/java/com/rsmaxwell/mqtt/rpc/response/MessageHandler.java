@@ -17,7 +17,7 @@ import com.rsmaxwell.mqtt.rpc.common.Result;
 
 public class MessageHandler extends Adapter implements MqttCallback {
 
-	private static final Logger logger = LogManager.getLogger(MessageHandler.class);
+	private static final Logger logger = LogManager. getLogger(MessageHandler.class);
 
 	private MqttAsyncClient client;
 	private Object ctx;
