@@ -14,6 +14,7 @@ import com.rsmaxwell.mqtt.rpc.common.Adapter;
 import com.rsmaxwell.mqtt.rpc.common.Request;
 import com.rsmaxwell.mqtt.rpc.common.Response;
 import com.rsmaxwell.mqtt.rpc.common.Result;
+import com.rsmaxwell.mqtt.rpc.utilities.BadRequest;
 
 public class MessageHandler extends Adapter implements MqttCallback {
 
@@ -130,9 +131,11 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 		try {
 			result = handler.handleRequest(ctx, request.getArgs());
+		} catch (BadRequest e) {
+			return Result.badRequestException(e);
 		} catch (Exception e) {
 			logger.catching(e);
-			return Result.badRequestException(e);
+			return Result.internalErrorException(e);
 		}
 
 		if (result == null) {
@@ -155,7 +158,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			body = mapper.writeValueAsBytes(response);
 		} catch (Exception e) {
 			logger.catching(e);
-			String message = String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage());
+			String message = e.getMessage();
 			body = message.getBytes();
 		}
 
