@@ -15,10 +15,11 @@ import com.rsmaxwell.mqtt.rpc.common.Request;
 import com.rsmaxwell.mqtt.rpc.common.Response;
 import com.rsmaxwell.mqtt.rpc.common.Result;
 import com.rsmaxwell.mqtt.rpc.utilities.BadRequest;
+import com.rsmaxwell.mqtt.rpc.utilities.Unauthorised;
 
 public class MessageHandler extends Adapter implements MqttCallback {
 
-	private static final Logger logger = LogManager.getLogger(MessageHandler.class);
+	private static final Logger log = LogManager.getLogger(MessageHandler.class);
 
 	private MqttAsyncClient client;
 	private Object ctx;
@@ -50,11 +51,11 @@ public class MessageHandler extends Adapter implements MqttCallback {
 	}
 
 	public void messageArrived(String topic, MqttMessage requestMessage) throws Exception {
-		logger.info(String.format("Received request: %s", new String(requestMessage.getPayload())));
+		log.info(String.format("Received request: %s", new String(requestMessage.getPayload())));
 
 		MqttProperties requestProperties = requestMessage.getProperties();
 		if (requestProperties == null) {
-			logger.error("discarding request with no properties");
+			log.error("discarding request with no properties");
 			return;
 		}
 
@@ -62,27 +63,27 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		if (correlationData == null) {
 
 			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestProperties);
-			logger.debug(String.format("Properties:\n%s", json));
+			log.debug(String.format("Properties:\n%s", json));
 
-			logger.error("discarding request with no correlationData");
+			log.error("discarding request with no correlationData");
 			return;
 		}
 
 		String correlID = new String(correlationData);
-		logger.debug(String.format("correlationData: %s", correlID));
+		log.debug(String.format("correlationData: %s", correlID));
 
 		String responseTopic = requestProperties.getResponseTopic();
 		if (responseTopic == null) {
-			logger.error("discarding request with no responseTopic");
+			log.error("discarding request with no responseTopic");
 			return;
 		}
 
 		if (responseTopic.length() <= 0) {
-			logger.error("discarding request with empty responseTopic");
+			log.error("discarding request with empty responseTopic");
 			return;
 		}
 
-		logger.debug(String.format("responseTopic:   %s", responseTopic));
+		log.debug(String.format("responseTopic:   %s", responseTopic));
 
 		Result result = getResult(responseTopic, requestMessage);
 
@@ -91,7 +92,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		client.publish(responseTopic, responseMessage).waitForCompletion();
 
 		if (result.isQuit()) {
-			logger.debug("quitting");
+			log.debug("quitting");
 			synchronized (keepRunning) {
 				keepRunning.notify();
 			}
@@ -106,7 +107,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 		Request request = null;
 		try {
-			logger.debug("decoding message payload");
+			log.debug("decoding message payload");
 			request = mapper.readValue(payload, Request.class);
 		} catch (Exception e) {
 			return Result.badRequest(e.getMessage());
@@ -131,10 +132,12 @@ public class MessageHandler extends Adapter implements MqttCallback {
 
 		try {
 			result = handler.handleRequest(ctx, request.getArgs());
+		} catch (Unauthorised e) {
+			return Result.unauthorised();
 		} catch (BadRequest e) {
 			return Result.badRequest(e.getMessage());
 		} catch (Exception e) {
-			logger.catching(e);
+			log.catching(e);
 			return Result.internalError(e.getMessage());
 		}
 
@@ -152,19 +155,19 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			response = Response.internalError("discarding request because response was null");
 		}
 
-		logger.debug("encoding response");
+		log.debug("encoding response");
 		byte[] body = null;
 		try {
 			body = mapper.writeValueAsBytes(response);
 		} catch (Exception e) {
-			logger.catching(e);
+			log.catching(e);
 			String message = e.getMessage();
 			body = message.getBytes();
 		}
 
 		if (body == null) {
 			String message = "response body is null";
-			logger.error(message);
+			log.error(message);
 			body = message.getBytes();
 		}
 
@@ -175,7 +178,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		responseMessage.setProperties(responseProperties);
 		responseMessage.setQos(qos);
 
-		logger.info(String.format("Sending reply: %s", new String(body)));
+		log.info(String.format("Sending reply: %s", new String(body)));
 
 		return responseMessage;
 	}
