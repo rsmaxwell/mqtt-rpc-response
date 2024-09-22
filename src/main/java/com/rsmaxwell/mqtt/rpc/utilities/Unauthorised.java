@@ -14,11 +14,7 @@ public class Unauthorised extends StatusException {
 		super(message, cause);
 	}
 
-	public Unauthorised(String message) {
-		super(message);
-	}
-
-	public Unauthorised(Throwable cause) {
-		super(cause);
+	public Unauthorised() {
+		super("Not Authorised");
 	}
 }
