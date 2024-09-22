@@ -86,6 +86,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		log.debug(String.format("responseTopic:   %s", responseTopic));
 
 		Result result = getResult(responseTopic, requestMessage);
+		log.debug(String.format("result:   %s", result));
 
 		MqttMessage responseMessage = getResponseMessage(requestMessage, result);
 
@@ -131,12 +132,16 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		}
 
 		try {
+			log.debug("before handleRequest");
 			result = handler.handleRequest(ctx, request.getArgs());
 		} catch (Unauthorised e) {
+			log.debug("Unauthorised");
 			return Result.unauthorised();
 		} catch (BadRequest e) {
+			log.debug("BadRequest");
 			return Result.badRequest(e.getMessage());
 		} catch (Exception e) {
+			log.debug("Exception");
 			log.catching(e);
 			return Result.internalError(e.getMessage());
 		}
@@ -145,6 +150,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			return Result.badRequest("result is null");
 		}
 
+		log.debug(String.format("returning: %s", result.toString()));
 		return result;
 	}
 
