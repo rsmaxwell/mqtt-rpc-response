@@ -109,7 +109,7 @@ public class MessageHandler extends Adapter implements MqttCallback {
 			logger.debug("decoding message payload");
 			request = mapper.readValue(payload, Request.class);
 		} catch (Exception e) {
-			return Result.badRequestException(e);
+			return Result.badRequest(e.getMessage());
 		}
 
 		if (request == null) {
@@ -132,10 +132,10 @@ public class MessageHandler extends Adapter implements MqttCallback {
 		try {
 			result = handler.handleRequest(ctx, request.getArgs());
 		} catch (BadRequest e) {
-			return Result.badRequestException(e);
+			return Result.badRequest(e.getMessage());
 		} catch (Exception e) {
 			logger.catching(e);
-			return Result.internalErrorException(e);
+			return Result.internalError(e.getMessage());
 		}
 
 		if (result == null) {

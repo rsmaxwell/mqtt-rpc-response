@@ -46,10 +46,10 @@ public class CalculatorHandler extends RequestHandler {
 			return Result.success(value);
 		} catch (ArithmeticException e) {
 			logger.debug(String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
-			return Result.badRequestException(e);
+			return Result.badRequest(e.getMessage());
 		} catch (Exception e) {
 			logger.catching(e);
-			return Result.badRequestException(e);
+			return Result.badRequest(e.getMessage());
 		}
 	}
 }
